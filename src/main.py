@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+
 from src.api.v1.urls import router
 
 

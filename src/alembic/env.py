@@ -1,9 +1,10 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from api.v1.core.database import SQLBase
+from src import models  # noqa F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -18,7 +19,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = SQLBase.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -41,7 +42,7 @@ def run_migrations_offline():
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
-        target_metadata=target_metadata,
+        target_metadata="postgresql://dev:dev@localhost:5432/dev",
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
@@ -57,8 +58,10 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    conf = config.get_section(config.config_ini_section)
+    conf["sqlalchemy.url"] = "postgresql://dev:dev@localhost:5432/dev"
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
+        conf,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
