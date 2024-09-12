@@ -18,11 +18,6 @@ engine = create_engine("postgresql://dev:dev@localhost:5432/dev", pool_pre_ping=
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-""" class random_uuid(expression.FunctionElement):
-    type = Uuid()
-    inherit_cache = False """
-
-
 def get_session() -> Session:
     session = SessionLocal()
     try:
