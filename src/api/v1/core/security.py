@@ -12,11 +12,14 @@ class AuthManager:
             "email": user.email,
             "exp": datetime.utcnow() + timedelta(days=1),
         }
-        return [jwt.encode(
-            claims=claims,
-            key="super_secret_jeje",
-            algorithm="HS256",
-        ), claims["exp"]]
+        return [
+            jwt.encode(
+                claims=claims,
+                key="super_secret_jeje",
+                algorithm="HS256",
+            ),
+            claims["exp"],
+        ]
 
     def set__cookie(response: Response, key, value):
         response.set_cookie(key=key, value=value, httponly=True)
