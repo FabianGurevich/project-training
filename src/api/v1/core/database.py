@@ -1,7 +1,15 @@
 import uuid
 from typing import Any, Dict, Generic, Sequence, Type, TypeVar
 
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, declarative_mixin, declared_attr, mapped_column, sessionmaker
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    Session,
+    declarative_mixin,
+    declared_attr,
+    mapped_column,
+    sessionmaker,
+)
 from fastapi import HTTPException
 
 from sqlalchemy import create_engine, func, select
@@ -68,6 +76,10 @@ class Objects(Generic[_Model]):
 
     def all(self) -> Sequence[_Model]:
         return self.session.execute(self.base_statement).scalars().unique().all()
+
+    def get(self, *where_clause: Any) -> _Model | None:
+        statement = self.base_statement.where(*where_clause)
+        return self.session.execute(statement).unique().scalar_one_or_none()
 
     def get_or_404(self, *where_clause: Any) -> _Model:
         obj = self.get(*where_clause)
