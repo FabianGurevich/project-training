@@ -1,11 +1,11 @@
 import uuid
-
 from typing import Any, Dict, Generic, Sequence, Type, TypeVar
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, declarative_mixin, declared_attr, mapped_column, sessionmaker
 from fastapi import HTTPException
 
 from sqlalchemy import create_engine, func, select
+from src.helpers.sql import random_uuid
 
 from sqlalchemy.sql import Select
 
@@ -14,7 +14,7 @@ import re
 _snakecase_re = re.compile(r"((?<=[a-z\d])[A-Z]|(?!^)[A-Z](?=[a-z]))")
 _snakecase_spaces_re = re.compile(r"[ -_]+")
 
-engine = create_engine("postgresql://dev:dev@localhost:5432/dev", pool_pre_ping=True)
+engine = create_engine("postgresql://dev:dev@db:5432/dev", pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
@@ -101,5 +101,5 @@ class Objects(Generic[_Model]):
 @declarative_mixin
 class TableIdMixin:
     id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True
+        primary_key=True, server_default=random_uuid()
     )
