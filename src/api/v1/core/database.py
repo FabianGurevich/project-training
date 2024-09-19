@@ -8,30 +8,20 @@ from sqlalchemy.orm import (
     declarative_mixin,
     declared_attr,
     mapped_column,
-    sessionmaker,
 )
 from fastapi import HTTPException
 
-from sqlalchemy import create_engine, func, select
+from sqlalchemy import func, select
+
 from src.helpers.sql import random_uuid
 
 from sqlalchemy.sql import Select
 
 import re
 
+
 _snakecase_re = re.compile(r"((?<=[a-z\d])[A-Z]|(?!^)[A-Z](?=[a-z]))")
 _snakecase_spaces_re = re.compile(r"[ -_]+")
-
-engine = create_engine("postgresql://dev:dev@db:5432/dev", pool_pre_ping=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-def get_session() -> Session:
-    session = SessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
 
 
 def snakecase(string: str) -> str:
