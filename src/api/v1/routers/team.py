@@ -17,9 +17,8 @@ def create_team(
     request: Request = None,
 ) -> TeamCreate:
     logged_user = get_user(request=request, session=session)
-    print(logged_user.id)
-    print(team_data.model_dump())
     info_with_owner = TeamCreate(owner_id=logged_user.id, **team_data.model_dump())
-    print(info_with_owner)
-    team = TeamController.create_team(info=info_with_owner, session=session, owner_id=logged_user.id)
+    team = TeamController.create_team(
+        info=info_with_owner, session=session, owner_id=logged_user.id
+    )
     return team
