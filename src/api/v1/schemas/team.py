@@ -11,7 +11,17 @@ class TeamCreate(BaseModel):
     formation: Formations
 
 
+class AddPlayer(BaseModel):
+    team_id: UUID
+    player_id: UUID
+
+
 class Team(TeamCreate):
     score: int = 0
     id: UUID
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TeamInfo(Team):
+    players: list[str]
     model_config = ConfigDict(from_attributes=True)
