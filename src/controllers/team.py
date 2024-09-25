@@ -59,9 +59,7 @@ class TeamController:
         return team
 
     def get_teams(user_id: UUID, session: Session) -> List[TeamInfo]:
-        print(user_id)
         teams = Team.objects(session).get_all(user_id == Team.owner_id)
-        print(teams)
         team_to_return = []
         for team in teams:
             players = [player.name for player in team.players]
@@ -75,3 +73,11 @@ class TeamController:
             )
             team_to_return.append(team_info)
         return team_to_return
+
+    def delete_team(team_id: UUID, owner_id: UUID, session: Session) -> None:
+        team = Team.objects(session).get(Team.id == team_id)
+        if team.owner_id != owner_id:
+            raise HTTPException(status_code=403, detail="Not owner of team")
+        session.delete(team)
+        session.commit()
+        return None

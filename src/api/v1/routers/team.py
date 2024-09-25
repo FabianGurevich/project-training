@@ -85,3 +85,17 @@ def get_team(team_id: UUID, session: Session = Depends(get_session)) -> TeamInfo
         players=players,
     )
     return team_info
+
+
+@router.delete("/{team_id}", status_code=200)
+def delete_team(
+    team_id: UUID, session: Session = Depends(get_session), request: Request = None
+) -> None:
+    logged_user = get_user(request=request, session=session)
+    if not logged_user:
+        HTTPException(status_code=401, detail="Unauthorized")
+
+    TeamController.delete_team(
+        team_id=team_id, owner_id=logged_user.id, session=session
+    )
+    return {"message": "Team deleted successfully."}

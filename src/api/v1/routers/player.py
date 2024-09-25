@@ -15,8 +15,6 @@ def create_player(
     info_to_create: PlayerCreate,
     session: Session = Depends(get_session),
 ) -> PlayerCreate:
-    print(info_to_create.club_name)
-    print(info_to_create)
     club = Club.objects(session).get(Club.name == info_to_create.club_name)
     player = PlayerController.create_player(
         info=info_to_create, club_id=club.id, session=session
