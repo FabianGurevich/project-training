@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi import Depends
 
 from src.api.v1.core.dependencies import get_session, get_user
@@ -29,17 +29,22 @@ def create_team(
 def add_player_to_team(
     add_player_data: AddPlayer,
     session: Session = Depends(get_session),
+    request: Request = None,
 ) -> None:
+    logged_user = get_user(request=request, session=session)
+    if not logged_user:
+        HTTPException(status_code=401, detail="Unauthorized")
     TeamController.add_player_to_team(
         team_id=add_player_data.team_id,
         player_id=add_player_data.player_id,
         session=session,
+        owner_id=logged_user.id,
     )
     return {"message": "Player added to team successfully."}
 
 
 @router.get("/{team_id}", response_model=TeamInfo)
-def get_team(team_id: UUID, session: Session = Depends(get_session)):
+def get_team(team_id: UUID, session: Session = Depends(get_session)) -> TeamInfo:
     team = TeamController.get_team(team_id=team_id, session=session)
     players = [player.name for player in team.players]
     team_info = TeamInfo(
