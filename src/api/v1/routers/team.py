@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi import Depends
 
 from src.api.v1.core.dependencies import get_session, get_user
-from src.api.v1.schemas.team import AddPlayer, TeamCreate, TeamInfo
+from src.api.v1.schemas.team import AddRemovePlayer, TeamCreate, TeamInfo
 from src.api.v1.core.database import Session
 from src.controllers.team import TeamController
 
@@ -25,9 +25,9 @@ def create_team(
     return team
 
 
-@router.post("/add_player", status_code=201)
+@router.post("/add_player", status_code=200)
 def add_player_to_team(
-    add_player_data: AddPlayer,
+    add_player_data: AddRemovePlayer,
     session: Session = Depends(get_session),
     request: Request = None,
 ) -> None:
@@ -56,3 +56,21 @@ def get_team(team_id: UUID, session: Session = Depends(get_session)) -> TeamInfo
         players=players,
     )
     return team_info
+
+
+@router.post("/remove_player", status_code=200)
+def remove_player_from_team(
+    add_player_data: AddRemovePlayer,
+    session: Session = Depends(get_session),
+    request: Request = None,
+) -> None:
+    logged_user = get_user(request=request, session=session)
+    if not logged_user:
+        HTTPException(status_code=401, detail="Unauthorized")
+    TeamController.remove_player_from_team(
+        team_id=add_player_data.team_id,
+        player_id=add_player_data.player_id,
+        session=session,
+        owner_id=logged_user.id,
+    )
+    return {"message": "Player removed from team successfully."}

@@ -20,7 +20,9 @@ class TeamController:
             raise HTTPException(status_code=404, detail="Team not found")
         return team
 
-    def add_player_to_team(team_id: UUID, player_id: UUID, owner_id: UUID, session: Session):
+    def add_player_to_team(
+        team_id: UUID, player_id: UUID, owner_id: UUID, session: Session
+    ):
         team = TeamController.get_team(team_id, session)
         if team.owner_id != owner_id:
             raise HTTPException(status_code=403, detail="Not owner of team")
@@ -38,5 +40,19 @@ class TeamController:
             raise HTTPException(status_code=400, detail="Player already in team")
         team.players.append(player_to_add)
         team.score += player_to_add.score
+        session.commit()
+        return team
+
+    def remove_player_from_team(
+        team_id: UUID, player_id: UUID, owner_id: UUID, session: Session
+    ):
+        team = TeamController.get_team(team_id, session)
+        if team.owner_id != owner_id:
+            raise HTTPException(status_code=403, detail="Not owner of team")
+        player_to_remove = PlayerController.get_player(player_id, session)
+        if player_to_remove not in team.players:
+            raise HTTPException(status_code=400, detail="Player not in team")
+        team.players.remove(player_to_remove)
+        team.score -= player_to_remove.score
         session.commit()
         return team

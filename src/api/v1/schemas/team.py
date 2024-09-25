@@ -11,7 +11,7 @@ class TeamCreate(BaseModel):
     formation: Formations
 
 
-class AddPlayer(BaseModel):
+class AddRemovePlayer(BaseModel):
     team_id: UUID
     player_id: UUID
 
