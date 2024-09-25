@@ -43,21 +43,6 @@ def add_player_to_team(
     return {"message": "Player added to team successfully."}
 
 
-@router.get("/{team_id}", response_model=TeamInfo)
-def get_team(team_id: UUID, session: Session = Depends(get_session)) -> TeamInfo:
-    team = TeamController.get_team(team_id=team_id, session=session)
-    players = [player.name for player in team.players]
-    team_info = TeamInfo(
-        name=team.name,
-        description=team.description,
-        formation=team.formation,
-        score=team.score,
-        id=team.id,
-        players=players,
-    )
-    return team_info
-
-
 @router.post("/remove_player", status_code=200)
 def remove_player_from_team(
     add_player_data: AddRemovePlayer,
@@ -74,3 +59,29 @@ def remove_player_from_team(
         owner_id=logged_user.id,
     )
     return {"message": "Player removed from team successfully."}
+
+
+@router.get("/give_teams_user", status_code=200, response_model=list[TeamInfo])
+def get_teams_from_user(
+    session: Session = Depends(get_session), request: Request = None
+):
+    logged_user = get_user(request=request, session=session)
+    if not logged_user:
+        HTTPException(status_code=401, detail="Unauthorized")
+    teams = TeamController.get_teams(user_id=logged_user.id, session=session)
+    return teams
+
+
+@router.get("/{team_id}", response_model=TeamInfo)
+def get_team(team_id: UUID, session: Session = Depends(get_session)) -> TeamInfo:
+    team = TeamController.get_team(team_id=team_id, session=session)
+    players = [player.name for player in team.players]
+    team_info = TeamInfo(
+        name=team.name,
+        description=team.description,
+        formation=team.formation,
+        score=team.score,
+        id=team.id,
+        players=players,
+    )
+    return team_info

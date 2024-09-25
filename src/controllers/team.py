@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import HTTPException
 from sqlalchemy import UUID
 from src.api.v1.core.database import Session
@@ -56,3 +57,21 @@ class TeamController:
         team.score -= player_to_remove.score
         session.commit()
         return team
+
+    def get_teams(user_id: UUID, session: Session) -> List[TeamInfo]:
+        print(user_id)
+        teams = Team.objects(session).get_all(user_id == Team.owner_id)
+        print(teams)
+        team_to_return = []
+        for team in teams:
+            players = [player.name for player in team.players]
+            team_info = TeamInfo(
+                name=team.name,
+                description=team.description,
+                formation=team.formation,
+                score=team.score,
+                id=team.id,
+                players=players,
+            )
+            team_to_return.append(team_info)
+        return team_to_return
