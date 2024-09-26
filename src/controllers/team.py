@@ -90,3 +90,16 @@ class TeamController:
         session.delete(team)
         session.commit()
         return None
+
+    def update_team(team_id: UUID, info: TeamCreate, session: Session) -> None:
+        team = Team.objects(session).get(Team.id == team_id)
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found")
+        if info.name:
+            team.name = info.name
+        if info.description:
+            team.description = info.description
+        if info.formation:
+            team.formation = info.formation
+        session.commit()
+        return None

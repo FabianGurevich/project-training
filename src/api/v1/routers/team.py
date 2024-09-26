@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi import Depends
 
 from src.api.v1.core.dependencies import get_session, get_user
-from src.api.v1.schemas.team import AddRemovePlayer, TeamCreate, TeamInfo
+from src.api.v1.schemas.team import AddRemovePlayer, TeamCreate, TeamInfo, TeamUpdate
 from src.api.v1.core.database import Session
 from src.controllers.team import TeamController
 
@@ -70,6 +70,16 @@ def get_teams_from_user(
         HTTPException(status_code=401, detail="Unauthorized")
     teams = TeamController.get_teams(user_id=logged_user.id, session=session)
     return teams
+
+
+@router.put("/update/{team_id}", status_code=200)
+def update_team(
+    info_to_update: TeamUpdate,
+    team_id: UUID,
+    session: Session = Depends(get_session),
+):
+    TeamController.update_team(team_id=team_id, info=info_to_update, session=session)
+    return {"message": "Team updated successfully."}
 
 
 @router.get("/{team_id}", response_model=TeamInfo)

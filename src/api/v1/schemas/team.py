@@ -25,3 +25,9 @@ class Team(TeamCreate):
 class TeamInfo(Team):
     players: list[str]
     model_config = ConfigDict(from_attributes=True)
+
+
+class TeamUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    formation: Formations | None = None
