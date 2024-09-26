@@ -14,3 +14,10 @@ class PlayerCreate(PlayerBase):
 
 class Player(PlayerBase):
     club_id: UUID
+
+
+class PlayerUpdate(BaseModel):
+    name: str | None = None
+    position: str | None = None
+    score: int | None = None
+    club_name: str | None = None

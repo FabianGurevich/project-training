@@ -1,5 +1,6 @@
+from uuid import UUID
 from fastapi import HTTPException
-from src.api.v1.schemas.player import PlayerCreate, Player as PlayerSchema
+from src.api.v1.schemas.player import PlayerCreate, Player as PlayerSchema, PlayerUpdate
 from src.models.player import Player
 
 
@@ -18,3 +19,17 @@ class PlayerController:
         if not player:
             raise HTTPException(status_code=404, detail="Player not found")
         return player
+
+    def update_player(
+        info: PlayerUpdate, player: Player, club_id: UUID, session
+    ) -> PlayerUpdate:
+        if info.name:
+            player.name = info.name
+        if info.score:
+            player.score = info.score
+        if info.position:
+            player.position = info.position
+        if club_id:
+            player.club_id = club_id
+        session.commit()
+        return info
