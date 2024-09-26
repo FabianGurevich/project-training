@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Response
 from fastapi import Depends
 
+from src.api.v1.core.dependencies import get_session
 from src.api.v1.schemas.user import UserCreate, UserBase, UserLogin
 from src.api.v1.schemas.token import Token
-from src.api.v1.core.database import get_session, Session
+from src.api.v1.core.database import Session
 from src.controllers.user import UserController
 from src.api.v1.core.security import AuthManager
 
