@@ -61,7 +61,7 @@ def remove_player_from_team(
     return {"message": "Player removed from team successfully."}
 
 
-@router.get("/give_teams_user", status_code=200, response_model=list[TeamInfo])
+@router.get("/list_teams_user", status_code=200, response_model=list[TeamInfo])
 def get_teams_from_user(
     session: Session = Depends(get_session), request: Request = None
 ):
