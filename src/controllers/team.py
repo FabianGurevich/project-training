@@ -91,8 +91,10 @@ class TeamController:
         session.commit()
         return None
 
-    def update_team(team_id: UUID, info: TeamCreate, session: Session) -> None:
+    def update_team(team_id: UUID, owner_id: UUID, info: TeamCreate, session: Session) -> None:
         team = Team.objects(session).get(Team.id == team_id)
+        if team.owner_id != owner_id:
+            raise HTTPException(status_code=403, detail="Not owner of team")
         if not team:
             raise HTTPException(status_code=404, detail="Team not found")
         if info.name:
