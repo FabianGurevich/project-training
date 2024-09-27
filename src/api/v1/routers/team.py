@@ -82,7 +82,9 @@ def update_team(
     logged_user = get_user(request=request, session=session)
     if not logged_user:
         HTTPException(status_code=401, detail="Unauthorized")
-    TeamController.update_team(team_id=team_id, info=info_to_update, owner_id=logged_user.id, session=session)
+    TeamController.update_team(
+        team_id=team_id, info=info_to_update, owner_id=logged_user.id, session=session
+    )
     return {"message": "Team updated successfully."}
 
 
